@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* AuthService Admin - Azure/Entra ID inspired dark theme */
+
+@layer base {
+  :root {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 13%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 100% 52%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 222 47% 18%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 222 47% 16%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 199 89% 48%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 0%;
+
+    --border: 222 47% 20%;
+    --input: 222 47% 18%;
+    --ring: 210 100% 52%;
+
+    --radius: 0.75rem;
+
+    /* Custom gradients */
+    --gradient-azure: linear-gradient(135deg, hsl(210 100% 52%) 0%, hsl(199 89% 48%) 100%);
+    --gradient-dark: linear-gradient(180deg, hsl(222 47% 13%) 0%, hsl(222 47% 8%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(222 47% 15%) 0%, hsl(222 47% 12%) 100%);
+    
+    /* Glow effects */
+    --glow-primary: 0 0 20px hsl(210 100% 52% / 0.3);
+    --glow-accent: 0 0 20px hsl(199 89% 48% / 0.3);
+    --glow-success: 0 0 20px hsl(142 76% 36% / 0.3);
+
+    --sidebar-background: 222 47% 9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 100% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 47% 15%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 47% 18%;
+    --sidebar-ring: 210 100% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-xl;
+    box-shadow: 0 8px 32px hsl(222 47% 5% / 0.5);
+  }
+
+  .glow-border {
+    @apply relative;
+  }
+
+  .glow-border::before {
+    content: '';
+    @apply absolute -inset-[1px] rounded-xl opacity-0 transition-opacity duration-300;
+    background: var(--gradient-azure);
+    z-index: -1;
+  }
+
+  .glow-border:hover::before {
+    @apply opacity-100;
+  }
+
+  .status-indicator {
+    @apply w-2 h-2 rounded-full animate-pulse;
+  }
+
+  .status-indicator.online {
+    @apply bg-success;
+    box-shadow: var(--glow-success);
+  }
+
+  .status-indicator.offline {
+    @apply bg-destructive;
+  }
+
+  .code-block {
+    @apply bg-background/80 rounded-lg p-4 font-mono text-sm overflow-x-auto border border-border/50;
+  }
+
+  .endpoint-badge {
+    @apply px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wide;
+  }
+
+  .endpoint-badge.get {
+    @apply bg-success/20 text-success;
+  }
+
+  .endpoint-badge.post {
+    @apply bg-primary/20 text-primary;
+  }
+
+  .endpoint-badge.delete {
+    @apply bg-destructive/20 text-destructive;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200;
+    @apply text-muted-foreground hover:text-foreground hover:bg-secondary/50;
+  }
+
+  .nav-link.active {
+    @apply bg-primary/10 text-primary border-l-2 border-primary;
+  }
+
+  .input-azure {
+    @apply bg-input border-border/50 focus:border-primary focus:ring-2 focus:ring-primary/20;
+  }
+
+  .btn-azure {
+    background: var(--gradient-azure);
+    @apply text-primary-foreground font-medium shadow-lg;
+    box-shadow: var(--glow-primary);
+  }
+
+  .btn-azure:hover {
+    @apply opacity-90;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-azure);
+  }
+
+  .bg-grid {
+    background-image: 
+      linear-gradient(hsl(222 47% 18% / 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(222 47% 18% / 0.3) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+}
+
+/* Mermaid lab styles */
+.mermaid-container svg {
+  max-width: 100%;
+  height: auto;
+  background: transparent !important;
+}
+.mermaid-container .mermaid-active {
+  stroke: hsl(var(--primary)) !important;
+  stroke-width: 3px !important;
+  filter: drop-shadow(0 0 6px hsl(var(--primary) / 0.6));
+  animation: mermaidPulse 1.2s ease-in-out infinite;
+}
+@keyframes mermaidPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}

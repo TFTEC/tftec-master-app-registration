@@ -1,0 +1,72 @@
+# ──────────────────────────────────────────────────────────
+# Logs
+# ──────────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ──────────────────────────────────────────────────────────
+# Dependencies
+# ──────────────────────────────────────────────────────────
+node_modules/
+
+# ──────────────────────────────────────────────────────────
+# Build outputs
+# ──────────────────────────────────────────────────────────
+dist/
+dist-ssr/
+build/
+*.local
+
+# .NET build artifacts
+**/bin/
+**/obj/
+
+# ──────────────────────────────────────────────────────────
+# Editor / IDE / OS
+# ──────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+.vs/
+**/.vs/
+
+# ──────────────────────────────────────────────────────────
+# Environment & Secrets
+# ──────────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+# .env.example MUST be committed (template para alunos preencherem)
+
+# ──────────────────────────────────────────────────────────
+# AIOX Framework (local-only, not committed)
+# ──────────────────────────────────────────────────────────
+.aiox-core/
+.aiox/
+AGENTS.md
+
+# ──────────────────────────────────────────────────────────
+# AI Tooling configs (local IDE configs, not committed)
+# ──────────────────────────────────────────────────────────
+.antigravity/
+.claude/
+.codex/
+.cursor/
+.gemini/
+.github/agents/

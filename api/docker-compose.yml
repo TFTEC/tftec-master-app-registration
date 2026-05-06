@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  authservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: authservice
+    ports:
+      - "8080:8080"
+    environment:
+      # Azure AD Configuration
+      - AzureAd__Instance=https://login.microsoftonline.com/
+      - AzureAd__TenantId=common
+      - AzureAd__ClientId=${AZURE_CLIENT_ID}
+      - AzureAd__ClientSecret=${AZURE_CLIENT_SECRET}
+      - AzureAd__Audience=api://${AZURE_CLIENT_ID}
+      
+      # Allowed Tenants (optional)
+      - AllowedTenants__AllowAll=true
+      
+      # Internal JWT Configuration
+      - InternalJwt__Issuer=AuthService
+      - InternalJwt__Audience=AuthService-Clients
+      - InternalJwt__SigningKey=${JWT_SIGNING_KEY}
+      - InternalJwt__ExpiryMinutes=60
+      
+      # Redis (conecta ao container local)
+      - Redis__ConnectionString=redis-local:6379,abortConnect=False
+      - Redis__InstanceName=AuthService:
+      
+      # Service Bus (vazio = fallback para log-only)
+      - ServiceBus__ConnectionString=${SERVICEBUS_CONNECTION_STRING:-}
+      - ServiceBus__TopicName=topic-app-events
+      
+      # Downstream APIs
+      - DownstreamApis__Apis__ApiA__BaseUrl=https://api-a.example.com
+      - DownstreamApis__Apis__ApiA__Scopes__0=api://api-a/.default
+      - DownstreamApis__Apis__ApiA__ClientId=api-a-client-id
+      
+      # ASP.NET Core
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    depends_on:
+      redis-local:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - authservice-network
+
+  redis-local:
+    image: redis:7-alpine
+    container_name: redis-local
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - authservice-network
+
+volumes:
+  redis-data:
+
+networks:
+  authservice-network:
+    driver: bridge
