@@ -28,7 +28,7 @@ const ClientCredentials = () => {
   const [loading, setLoading] = useState(false);
   const [adminToken, setAdminToken] = useState("");
   const [targetApi, setTargetApi] = useState("ApiA");
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleGetClientToken = async () => {

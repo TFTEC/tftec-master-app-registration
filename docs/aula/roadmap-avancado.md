@@ -191,7 +191,7 @@ Você está aqui ──▶ App Registration ✅
 
 > No `tftec-auth` específicamente, dá pra praticar **todos os 8 tópicos** sem precisar criar projeto novo. O sistema já tem:
 > - ✅ Multi-tenant
-> - ✅ OBO + Client Credentials + Auth Code (Cena 6 da aula)
+> - ✅ OBO + Client Credentials + Auth Code ([hands-on Cap 4](./hands-on.md#cap-4--tokens-15-min) + [Cap 8](./hands-on.md#cap-8--integrar-no-código-15-min))
 > - ✅ OIDC federation (CI/CD)
 > - 🔜 Managed Identity (próximo workshop)
 > - 🔜 Conditional Access (depende de policy de tenant)

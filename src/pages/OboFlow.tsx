@@ -33,7 +33,7 @@ const OboFlow = () => {
   const [userToken, setUserToken] = useState("");
   const [targetApi, setTargetApi] = useState("ApiA");
   const [scopes, setScopes] = useState<string[]>([DOWNSTREAM_APIS.ApiA.scopes[0] || ""]);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const addScope = () => setScopes([...scopes, ""]);

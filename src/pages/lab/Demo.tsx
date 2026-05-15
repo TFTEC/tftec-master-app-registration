@@ -71,7 +71,7 @@ export default function LabDemo() {
             throw silentErr;
           }
         }
-        log(makeEvent("Entra ID", "response", "Token recebido", `aud=${AZURE_CONFIG.audience}, exp=${new Date(result.expiresOn ?? Date.now()).toLocaleTimeString()}`));
+        log(makeEvent("Entra ID", "response", "Token1 (aud=AuthService) recebido", `exp=${new Date(result.expiresOn ?? Date.now()).toLocaleTimeString()}`));
         log(makeEvent("SPA", "request", "POST /auth/obo", `${AUTHSERVICE_API_URL}${ENDPOINTS.obo}`));
         const r = await fetch(`${AUTHSERVICE_API_URL}${ENDPOINTS.obo}`, {
           method: "POST",
@@ -84,14 +84,45 @@ export default function LabDemo() {
             scopes: ["https://graph.microsoft.com/User.Read"],
           }),
         });
-        const text = await r.text();
+        if (!r.ok) {
+          const text = await r.text();
+          log(
+            makeEvent(
+              "AuthService",
+              "error",
+              `${r.status} ${r.statusText}`,
+              text.length < 500 ? text : "Erro no OBO — verifique se a App Reg tem Microsoft Graph User.Read (Delegated) consentido + ClientSecret no backend.",
+              text
+            )
+          );
+          return;
+        }
+        const oboPayload = (await r.json()) as { accessToken: string; tokenType: string; expiresIn: number };
         log(
           makeEvent(
             "AuthService",
-            r.ok ? "response" : "error",
-            `${r.status} ${r.statusText}`,
-            r.ok ? "OBO concluído — token2 emitido para Graph (User.Read)" : text,
-            text
+            "response",
+            "Token2 (aud=Graph) emitido via OBO",
+            `MSAL backend trocou token1 → token2 mantendo identidade do user. expiresIn=${oboPayload.expiresIn}s`,
+            { tokenType: oboPayload.tokenType, expiresIn: oboPayload.expiresIn }
+          )
+        );
+
+        // Now: USE token2 to call Graph /me — close the loop didactically
+        log(makeEvent("AuthService (server-side)", "request", "GET Graph /me com token2", graphConfig.graphMeEndpoint));
+        const graphRes = await fetch(graphConfig.graphMeEndpoint, {
+          headers: { Authorization: `Bearer ${oboPayload.accessToken}` },
+        });
+        const graphData = await graphRes.json();
+        log(
+          makeEvent(
+            "Graph",
+            graphRes.ok ? "response" : "error",
+            `${graphRes.status} ${graphRes.statusText}`,
+            graphRes.ok
+              ? `OBO funcionou — Graph viu o USER (${graphData.displayName}), não o app. oid=${graphData.id}`
+              : graphData?.error?.message,
+            graphData
           )
         );
       } catch (e) {
@@ -99,7 +130,7 @@ export default function LabDemo() {
       }
     } else if (scenario.id === "client-credentials") {
       try {
-        log(makeEvent("MSAL", "request", "acquireToken (AuthService)", "Token do user pra autorização no AuthService"));
+        log(makeEvent("MSAL", "request", "acquireToken (AuthService)", "Token do user pra autorização no AuthService (Authorize policy)"));
         let result;
         try {
           result = await instance.acquireTokenSilent({ ...authServiceRequest, account: accounts[0] });
@@ -110,8 +141,8 @@ export default function LabDemo() {
             throw silentErr;
           }
         }
-        log(makeEvent("Entra ID", "response", "Token recebido", `aud=${AZURE_CONFIG.audience}`));
-        log(makeEvent("Daemon (via AuthService)", "request", "POST /auth/client-token", `${AUTHSERVICE_API_URL}${ENDPOINTS.clientToken}`));
+        log(makeEvent("Entra ID", "response", "Token (aud=AuthService) recebido", `Apenas autoriza chamada ao endpoint /auth/client-token — não é usado downstream`));
+        log(makeEvent("AuthService (atuando como daemon)", "request", "POST /auth/client-token", `${AUTHSERVICE_API_URL}${ENDPOINTS.clientToken}`));
         const r = await fetch(`${AUTHSERVICE_API_URL}${ENDPOINTS.clientToken}`, {
           method: "POST",
           headers: {
@@ -123,14 +154,45 @@ export default function LabDemo() {
             scopes: ["https://graph.microsoft.com/.default"],
           }),
         });
-        const text = await r.text();
+        if (!r.ok) {
+          const text = await r.text();
+          log(
+            makeEvent(
+              "AuthService",
+              "error",
+              `${r.status} ${r.statusText}`,
+              text.length < 500 ? text : "Erro no Client Credentials — verifique se a App Reg tem Microsoft Graph (Application) consentido pelo admin do tenant + ClientSecret no backend.",
+              text
+            )
+          );
+          return;
+        }
+        const ccPayload = (await r.json()) as { accessToken: string; tokenType: string; expiresIn: number };
         log(
           makeEvent(
             "AuthService",
-            r.ok ? "response" : "error",
-            `${r.status} ${r.statusText}`,
-            r.ok ? "Token de aplicação emitido (sem identidade de user)" : text,
-            text
+            "response",
+            "Token Application emitido (sem identidade de user)",
+            `Token tem claim 'roles' (App permissions), sem 'scp'. Auditoria mostra appid, não user. expiresIn=${ccPayload.expiresIn}s`,
+            { tokenType: ccPayload.tokenType, expiresIn: ccPayload.expiresIn }
+          )
+        );
+
+        // Now: USE token to call Graph /users — close the loop
+        log(makeEvent("AuthService (server-side)", "request", "GET Graph /users?$top=3", `${graphConfig.graphUsersEndpoint}?$top=3`));
+        const graphRes = await fetch(`${graphConfig.graphUsersEndpoint}?$top=3`, {
+          headers: { Authorization: `Bearer ${ccPayload.accessToken}` },
+        });
+        const graphData = await graphRes.json();
+        log(
+          makeEvent(
+            "Graph",
+            graphRes.ok ? "response" : "error",
+            `${graphRes.status} ${graphRes.statusText}`,
+            graphRes.ok
+              ? `Client Credentials funcionou — Graph deu ${graphData.value?.length ?? 0} users do TENANT (não restrito ao user logado). Roles application permission necessária.`
+              : graphData?.error?.message,
+            graphData
           )
         );
       } catch (e) {
@@ -149,6 +211,14 @@ export default function LabDemo() {
     },
   }));
 
+  // Pré-requisitos por cenário — orienta o aluno sobre o que precisa estar configurado na App Reg
+  const prereqs: Record<string, string> = {
+    "spa-login-api": "✅ Funciona out-of-the-box — User.Read (Delegated) já é consentido no login.",
+    obo: "⚠️ Requer Microsoft Graph User.Read (Delegated) consentida + ClientSecret no backend AuthService. Se a App Reg/backend já têm isso (caso do tftec-auth deployed), funciona. Caso contrário, espera erro 500 com hint.",
+    "client-credentials": "⚠️ Requer Microsoft Graph User.Read.All (Application) com admin consent + ClientSecret no backend. Se não tiver admin consent, espera erro 403. Comum no setup didático — instrução em api/README.md.",
+    saml: "ℹ️ Conceitual — SAML 2.0 é configurado em Enterprise Applications, não via Entra ID OIDC. Sem execução automatizada.",
+  };
+
   return (
     <div className="space-y-6 max-w-[1600px]">
       <header className="flex items-start justify-between gap-4 flex-wrap">
@@ -162,6 +232,20 @@ export default function LabDemo() {
           <Play className="w-4 h-4 mr-2" /> Executar de verdade
         </Button>
       </header>
+
+      <div className="rounded-md border border-primary/20 bg-primary/5 px-3 py-2 text-xs flex items-start justify-between gap-3 flex-wrap">
+        <span>
+          <strong className="text-primary">Pré-requisito:</strong> {prereqs[scenarioId] ?? "—"}
+        </span>
+        <a
+          href="https://github.com/tftec-guilherme/entra-auth-gateway/blob/main/docs/aula/demo-prereqs.md"
+          target="_blank"
+          rel="noreferrer"
+          className="text-primary hover:underline whitespace-nowrap"
+        >
+          Como configurar →
+        </a>
+      </div>
 
       <div className="grid gap-4 lg:grid-cols-[280px_1fr_400px]">
         <Card>

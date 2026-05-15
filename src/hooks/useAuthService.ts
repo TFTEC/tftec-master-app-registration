@@ -83,105 +83,85 @@ export const useAuthService = () => {
   }, []);
 
   const validateToken = useCallback(async (token: string) => {
-    try {
-      const response = await fetch(`${AUTHSERVICE_API_URL}${ENDPOINTS.validate}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
+    const response = await fetch(`${AUTHSERVICE_API_URL}${ENDPOINTS.validate}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      throw error;
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `HTTP ${response.status}`);
     }
+
+    return await response.json();
   }, []);
 
   const getUserClaims = useCallback(async (token: string) => {
-    try {
-      const response = await fetch(`${AUTHSERVICE_API_URL}${ENDPOINTS.me}`, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-      });
+    const response = await fetch(`${AUTHSERVICE_API_URL}${ENDPOINTS.me}`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      throw error;
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
+
+    return await response.json();
   }, []);
 
   const exchangeToken = useCallback(async (token: string) => {
-    try {
-      const response = await fetch(`${AUTHSERVICE_API_URL}${ENDPOINTS.exchange}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
+    const response = await fetch(`${AUTHSERVICE_API_URL}${ENDPOINTS.exchange}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      throw error;
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
+
+    return await response.json();
   }, []);
 
   const getOboToken = useCallback(async (token: string, targetApi: string, scopes: string[]) => {
-    try {
-      const response = await fetch(`${AUTHSERVICE_API_URL}${ENDPOINTS.obo}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ targetApi, scopes }),
-      });
+    const response = await fetch(`${AUTHSERVICE_API_URL}${ENDPOINTS.obo}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({ targetApi, scopes }),
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      throw error;
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
+
+    return await response.json();
   }, []);
 
   const getClientToken = useCallback(async (adminToken: string, targetApi: string) => {
-    try {
-      const response = await fetch(`${AUTHSERVICE_API_URL}${ENDPOINTS.clientToken}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${adminToken}`,
-        },
-        body: JSON.stringify({ targetApi }),
-      });
+    const response = await fetch(`${AUTHSERVICE_API_URL}${ENDPOINTS.clientToken}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${adminToken}`,
+      },
+      body: JSON.stringify({ targetApi }),
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      throw error;
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
+
+    return await response.json();
   }, []);
 
   return {

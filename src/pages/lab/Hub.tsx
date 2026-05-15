@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Beaker, Workflow, Code2, PlayCircle } from "lucide-react";
+import { Beaker, Workflow, Code2, PlayCircle, Network, ShieldCheck, KeyRound, Boxes, FileCode, BookOpen } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { AZURE_CONFIG } from "@/config/azure";
 
@@ -26,6 +26,48 @@ const modules = [
     description: "Simuladores animados de Auth Code+PKCE, Client Credentials, OBO e Device Code.",
     href: "/lab/fluxos",
     icon: Workflow,
+  },
+  {
+    title: "Topologias",
+    description: "Galeria visual: SPA, Web App, Mobile, Daemon, Microservices+APIM, Workload Identity.",
+    href: "/lab/topologias",
+    icon: Network,
+    badge: "novo",
+  },
+  {
+    title: "Permissions & Claims",
+    description: "Delegated vs Application, scp vs roles, App Roles vs Groups, admin consent.",
+    href: "/lab/permissions-claims",
+    icon: ShieldCheck,
+    badge: "novo",
+  },
+  {
+    title: "Credenciais",
+    description: "Client Secret vs Certificate vs Federated Identity (FIC) vs Managed Identity — qual usar quando.",
+    href: "/lab/credenciais",
+    icon: KeyRound,
+    badge: "novo",
+  },
+  {
+    title: "Multi-App Patterns",
+    description: "Pattern A vs B, single vs multi-tenant, B2B External Identities, OBO chains.",
+    href: "/lab/multi-app",
+    icon: Boxes,
+    badge: "novo",
+  },
+  {
+    title: "Protocolos",
+    description: "OIDC vs OAuth 2.0 vs SAML 2.0 vs WS-Fed — 20 anos de federation, qual reconhecer quando.",
+    href: "/lab/protocolos",
+    icon: FileCode,
+    badge: "novo",
+  },
+  {
+    title: "Recipes",
+    description: "10 receitas hands-on copy-pasta — SPA, Web App, Mobile, Daemon, FIC, B2B, AKS, Custom Claims, Swagger.",
+    href: "/lab/recipes",
+    icon: BookOpen,
+    badge: "★ destaque",
   },
 ];
 
@@ -90,9 +132,8 @@ export default function LabHub() {
 
       <Card className="bg-muted/20 border-dashed">
         <CardContent className="pt-6 text-sm text-muted-foreground">
-          📚 <strong>Mais módulos em desenvolvimento:</strong> Protocolos (SAML, WS-Fed),
-          Multi-App Patterns, Credenciais (Secret vs Cert vs Federated), Permissions & Claims, Topologias.
-          {" "}Roadmap completo em <code>docs/aula/lab-modules-roadmap.md</code> no repo.
+          🎯 <strong>8/8 módulos LIVE.</strong> O <code>/lab</code> do tftec-auth está completo. Veja a história, decisões e roadmap em{" "}
+          <code>docs/aula/lab-modules-roadmap.md</code> no repo.
         </CardContent>
       </Card>
     </div>

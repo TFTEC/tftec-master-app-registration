@@ -515,7 +515,7 @@ netstat -an | findstr "8080"     # API
 | Managed Identity | §4 |
 | Code review do sistema | `docs/review/security-audit.md` |
 
-🎓 **Workshop completo:** `docs/playbook/demo-class.md` (roteiro 2h da aula)
+🎓 **Workshop completo:** [`docs/playbook/roteiro-aula.md`](./roteiro-aula.md) (roteiro narrativo 2h) + [`docs/aula/hands-on.md`](../aula/hands-on.md) (tutorial linear hands-on)
 
 ---
 

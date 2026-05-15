@@ -26,6 +26,12 @@ import LabHub from "./pages/lab/Hub";
 import LabDemo from "./pages/lab/Demo";
 import LabTokens from "./pages/lab/Tokens";
 import LabFlows from "./pages/lab/Flows";
+import LabTopologias from "./pages/lab/Topologias";
+import LabPermissionsClaims from "./pages/lab/PermissionsClaims";
+import LabCredenciais from "./pages/lab/Credenciais";
+import LabMultiApp from "./pages/lab/MultiApp";
+import LabProtocolos from "./pages/lab/Protocolos";
+import LabRecipes from "./pages/lab/Recipes";
 import LabComingSoon from "./pages/lab/ComingSoon";
 
 const queryClient = new QueryClient();
@@ -96,14 +102,15 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/lab" element={<ProtectedRoute><AppLayout><LabHub /></AppLayout></ProtectedRoute>} />
+              <Route path="/lab/recipes" element={<ProtectedRoute><AppLayout><LabRecipes /></AppLayout></ProtectedRoute>} />
               <Route path="/lab/demo" element={<ProtectedRoute><AppLayout><LabDemo /></AppLayout></ProtectedRoute>} />
               <Route path="/lab/tokens" element={<ProtectedRoute><AppLayout><LabTokens /></AppLayout></ProtectedRoute>} />
               <Route path="/lab/fluxos" element={<ProtectedRoute><AppLayout><LabFlows /></AppLayout></ProtectedRoute>} />
-              <Route path="/lab/protocolos" element={<ProtectedRoute><AppLayout><LabComingSoon title="Protocolos" description="OIDC, OAuth 2.0, SAML 2.0 e WS-Federation" /></AppLayout></ProtectedRoute>} />
-              <Route path="/lab/multi-app" element={<ProtectedRoute><AppLayout><LabComingSoon title="Multi-App Patterns" description="Quando e como separar App Registrations" /></AppLayout></ProtectedRoute>} />
-              <Route path="/lab/credenciais" element={<ProtectedRoute><AppLayout><LabComingSoon title="Credenciais" description="Secret vs Certificate vs Federated Identity" /></AppLayout></ProtectedRoute>} />
-              <Route path="/lab/permissions-claims" element={<ProtectedRoute><AppLayout><LabComingSoon title="Permissions & Claims" description="Delegated vs Application, App Roles vs Groups" /></AppLayout></ProtectedRoute>} />
-              <Route path="/lab/topologias" element={<ProtectedRoute><AppLayout><LabComingSoon title="Topologias" description="Galeria de arquiteturas com Entra ID" /></AppLayout></ProtectedRoute>} />
+              <Route path="/lab/protocolos" element={<ProtectedRoute><AppLayout><LabProtocolos /></AppLayout></ProtectedRoute>} />
+              <Route path="/lab/multi-app" element={<ProtectedRoute><AppLayout><LabMultiApp /></AppLayout></ProtectedRoute>} />
+              <Route path="/lab/credenciais" element={<ProtectedRoute><AppLayout><LabCredenciais /></AppLayout></ProtectedRoute>} />
+              <Route path="/lab/permissions-claims" element={<ProtectedRoute><AppLayout><LabPermissionsClaims /></AppLayout></ProtectedRoute>} />
+              <Route path="/lab/topologias" element={<ProtectedRoute><AppLayout><LabTopologias /></AppLayout></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
